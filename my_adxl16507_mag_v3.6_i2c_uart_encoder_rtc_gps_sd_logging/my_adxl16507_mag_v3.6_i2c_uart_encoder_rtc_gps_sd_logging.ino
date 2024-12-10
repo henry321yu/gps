@@ -144,12 +144,14 @@ void setup() {
   if (myGNSS.begin(Wire) == false) // Connect to the u-blox module using Wire port
   {
     Serial.println(F("u-blox GNSS not detected at default I2C address. Please check wiring. Freezing."));
-    while (1);
+    //    while (1);
+    delay(1000);
   }
 
   //  myGNSS.setI2COutput(COM_TYPE_UBX); // Set the I2C port to output UBX only
   myGNSS.setI2COutput(COM_TYPE_NMEA); // 設定 I2C 為輸出 NMEA
   myGNSS.setNavigationFrequency(5, VAL_LAYER_RAM); // Set output to 5 times a second
+  //////////f9p//////////
 
   Serial.println(F("SD.begin"));
   if (!SD.begin(SD_CS)) {
@@ -205,10 +207,9 @@ void setup() {
 
 
 void loop() {
-  t0 = millis() * 0.001;
-  timee = t0;
-  /////////f9pppppp
+  //////////f9p//////////
   while (flag == true) {
+    t0 = millis() * 0.001;
     Serial.println("wait for GPS ...");
     digitalWrite(beeper, HIGH);
     delay(200);
@@ -217,7 +218,6 @@ void loop() {
       if (!logFile) {
         logFile = SD.open(logFileName, FILE_WRITE);
       }
-      t0 = millis() * 0.001;
       flag = false;
       uint16_t year = myGNSS.getYear();
       uint8_t month = myGNSS.getMonth();
@@ -227,25 +227,42 @@ void loop() {
       uint8_t second = myGNSS.getSecond();
       uint16_t millisecond = myGNSS.getMillisecond();
       uint8_t numSats = myGNSS.getSIV();
+      float fractionalSecond = millisecond / 1000.0;
       if (numSats == 0) {
         flag = true;
       }
       hour = hour + 8;
+      if (hour > 24)
+        hour = hour - 24;
 
-      float fractionalSecond = millisecond / 1000.0;
+      // 假設 RTC 時間是以 UTC 時間為基準
+      time_t gpsTime = makeTime({
+        second, minute, hour, day, month - 1, year - 1970 // makeTime 接收的 month 範圍為 0-11，year 要減去 1970
+      });
 
+      // 設定 RTC 時間
+      setTime(gpsTime);
+
+      t0 = millis() * 0.001;
       Serial.printf("Date: %04d-%02d-%02d, Time: %02d:%02d:%06.3f\n", year, month, day, hour, minute, second + fractionalSecond);
-      datedata = String(t0, 3) + "," + String(hour) + ":" +  String(minute) + ":" +  String(second + fractionalSecond);
+      datedata = String(t0, 3) + "," + String(hour) + ":" +  String(minute) + ":" +  String(second + fractionalSecond, 3);
       if (!logFile) {
         logFile = SD.open(logFileName, FILE_WRITE);
       }
-      Serial.print("GOT GPS : ");
+      Serial.printf("numSats : %d ", numSats);
+      Serial.printf("time,gpstime : ");
       Serial.println(datedata);
       logFile.println(datedata);
     }
     digitalWrite(beeper, LOW);
     delay(200);
+    if (t0 > 10)
+      flag = false;
   }
+  //////////f9p//////////
+
+  t0 = millis() * 0.001;
+  timee = t0;
 
   mag_data();  //12 15 back to my_adxl16507_mag_v2_sd_logging
   IMU.configSPI(); // Configure SPI communication  : SPISettings IMUSettings(1000000, MSBFIRST, SPI_MODE3);
