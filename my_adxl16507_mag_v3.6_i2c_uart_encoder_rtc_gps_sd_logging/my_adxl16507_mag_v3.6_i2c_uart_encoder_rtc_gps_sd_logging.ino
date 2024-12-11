@@ -256,7 +256,7 @@ void loop() {
     }
     digitalWrite(beeper, LOW);
     delay(200);
-    if (t0 > 10)
+    if (t0 > 30)
       flag = false;
   }
   //////////f9p//////////
