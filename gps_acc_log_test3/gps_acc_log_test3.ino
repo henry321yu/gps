@@ -19,9 +19,9 @@ void setup()
   }
 
   // 設定更新頻率為 20Hz
-  if (myGNSS.setNavigationFrequency(20)) // 設定更新頻率為 20Hz
+  if (myGNSS.setNavigationFrequency(5, VAL_LAYER_RAM)) // 設定更新頻率
   {
-    Serial.println("Successfully set navigation frequency to 20Hz.");
+    Serial.println("Successfully set navigation frequency.");
   }
   else
   {
@@ -43,7 +43,7 @@ void setup()
 
   //  myGNSS.setI2COutput(COM_TYPE_UBX); // Set the I2C port to output UBX only
   myGNSS.setI2COutput(COM_TYPE_NMEA); // 設定 I2C 為輸出 NMEA
-  myGNSS.setNavigationFrequency(5, VAL_LAYER_RAM); // Set output to 5 times a second
+//  myGNSS.setNavigationFrequency(5, VAL_LAYER_RAM);
 }
 
 void loop()
@@ -71,12 +71,15 @@ void loop()
     float fractionalSecond = millisecond / 1000.0;
 
     double t0 = millis() * 0.001;
-    Serial.printf("Date: %04d-%02d-%02d, Time: %02d:%02d:%06.3f\n", year, month, day, hour, minute, second + fractionalSecond);
-    Serial.printf("Satellites: %d\n", numSats);
-    Serial.printf("Latitude: %.7f, Longitude: %.7f\n", latitude, longitude);
-    Serial.printf("Horizontal Accuracy: %.1f m, Vertical Accuracy: %.1f m\n", hAcc / 1000.0, vAcc / 1000.0); // Convert mm to meters
+//    Serial.printf("Date: %04d-%02d-%02d, Time: %02d:%02d:%06.3f\n", year, month, day, hour, minute, second + fractionalSecond);
+//    Serial.printf("Satellites: %d\n", numSats);
+//    Serial.printf("Latitude: %.7f, Longitude: %.7f\n", latitude, longitude);
+//    Serial.printf("Horizontal Accuracy: %.1f m, Vertical Accuracy: %.1f m\n", hAcc / 1000.0, vAcc / 1000.0); // Convert mm to meters
+    
+    Serial.printf("time : %.3f,Date: %04d-%02d-%02d, Time: %02d:%02d:%06.3f ,Satellites: %d ,Latitude: %.7f, Longitude: %.7f,Horizontal Accuracy: %.1f m, Vertical Accuracy: %.1f m\n",t0, year, month, day, hour, minute, second + fractionalSecond, numSats, latitude, longitude, hAcc / 1000.0, vAcc / 1000.0);
+    
     String datedata = String(t0, 3) + "," + String(hour) + ":" +  String(minute) + ":" +  String(second + fractionalSecond, 3);
-    Serial.printf("time,gpstime : ");
-    Serial.println(datedata);
+//    Serial.printf("time,gpstime : ");
+//    Serial.println(datedata);
   }
 }
