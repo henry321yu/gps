@@ -6,7 +6,7 @@ from math import sqrt
 from threading import Thread
 
 # 設定序列埠
-port = "COM30"
+port = "COM38"
 baudrate = 115200  # 根據實際情況調整
 dataL = 1000 # 設定要繪圖的資料數
 k=5 #y軸留白大小
@@ -19,6 +19,7 @@ sats_data = deque(maxlen=dataL)
 hAcc_data = deque(maxlen=dataL)
 vAcc_data = deque(maxlen=dataL)
 Acc3d_data = deque(maxlen=dataL)
+fix_data = deque(maxlen=dataL)
 
 # 初始化繪圖
 fig, ax = plt.subplots(figsize=(10, 7))
@@ -47,7 +48,8 @@ def update_plot(frame):
             f"time: {time_data[-1]:.3f} s\n"
             f"latitude: {lat_data[-1]:.8f}\n"
             f"longitude: {lon_data[-1]:.8f}\n"
-            f"numSats: {sats_data[-1]}\n"
+            f"numSats: {sats_data[-1]:.0f}\n"
+            f"fix mode: {fix_data[-1]:.0f}\n"
             f"hAcc: {hAcc_data[-1]:.3f} m\n"
             f"vAcc: {vAcc_data[-1]:.3f} m\n"
             f"Acc3d: {Acc3d_data[-1]:.3f} m"
@@ -64,7 +66,7 @@ def read_serial_data():
             data = line.split(',')  # 以 "," 分割資料
 
             # 檢查資料是否有正確的 10 個數據
-            if len(data) == 8:
+            if len(data) == 9:
                 try:
                     # 將各個資料轉為浮點數
                     time_value = float(data[0])
@@ -75,6 +77,7 @@ def read_serial_data():
                     lon = float(data[5])
                     hAcc = float(data[6])
                     vAcc =float(data[7])
+                    fix =float(data[8])
                     
                     global k
 
@@ -91,6 +94,7 @@ def read_serial_data():
                     hAcc_data.append(hAcc)
                     vAcc_data.append(vAcc)
                     Acc3d_data.append(Acc3d)
+                    fix_data.append(fix)
 
                     # 印出資料
                     print(line)
