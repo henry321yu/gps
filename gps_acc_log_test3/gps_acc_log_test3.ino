@@ -66,7 +66,8 @@ void loop()
 
     double t0 = millis() * 0.001;
 
-    Serial.printf("time : %.3f,Date: %04d-%02d-%02d, Time: %02d:%02d:%06.3f ,Satellites: %d ,Latitude: %.7f, Longitude: %.7f,Horizontal Accuracy: %.1f m, Vertical Accuracy: %.1f m\n", t0, year, month, day, hour, minute, second + fractionalSecond, numSats, latitude, longitude, hAcc / 1000.0, vAcc / 1000.0);
+//    Serial.printf("time : %.3f,Date: %04d-%02d-%02d, Time: %02d:%02d:%06.3f ,Satellites: %d ,Latitude: %.7f, Longitude: %.7f,Horizontal Accuracy: %.1f m, Vertical Accuracy: %.1f m\n", t0, year, month, day, hour, minute, second + fractionalSecond, numSats, latitude, longitude, hAcc / 1000.0, vAcc / 1000.0);
+    Serial.printf("%.3f,%04d-%02d-%02d,%02d:%02d:%06.3f,%d,%.7f,%.7f,%.1f,%.1f\n", t0, year, month, day, hour, minute, second + fractionalSecond, numSats, latitude, longitude, hAcc / 1000.0, vAcc / 1000.0);
 
     String datedata = String(t0, 3) + "," + String(hour) + ":" +  String(minute) + ":" +  String(second + fractionalSecond, 3);
     //    Serial.println(datedata);
