@@ -169,9 +169,13 @@ void loop()
     Serial.println(f_accuracy, 4); // Print the accuracy with 4 decimal places
 
     String logdata;
-    logdata += String(d_lat, 9);
+    char d_latc[64];
+    char d_lonc[64];
+    sprintf(d_latc, "%.9f", d_lat);
+    sprintf(d_lonc, "%.9f", d_lon);
+    logdata += d_latc;
     logdata += ",";
-    logdata += String(d_lon, 9);
+    logdata += d_lonc;
     logdata += ",";
     logdata += String(f_ellipsoid, 4);
     logdata += ",";
@@ -179,7 +183,7 @@ void loop()
     logdata += ",";
     logdata += String(f_accuracy, 4);
 
-//    Serial.println(logdata);
+    Serial.println(logdata);
     HC12.println(logdata);
   }
 }
