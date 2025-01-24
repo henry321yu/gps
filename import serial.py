@@ -2,9 +2,9 @@ import serial
 from datetime import datetime, timedelta
 
 def parse_nmea(data):
-    """解析 NMEA 資料，回傳時間和衛星數"""
+    """解析 NMEA 資料，回傳時間和所有衛星數"""
     utc_time = None
-    satellite_count = None
+    satellites_in_view = None
 
     try:
         fields = data.split(',')
@@ -20,13 +20,15 @@ def parse_nmea(data):
                 local_datetime = utc_datetime + timedelta(hours=8)
                 utc_time = local_datetime.strftime('%H:%M:%S')
 
-            # 衛星數 (第 7 欄)
-            satellite_count = fields[7] if fields[7].isdigit() else None
+        if data.startswith('$GNGSV') or data.startswith('$GPGSV'):
+            # 總衛星數 (第 3 欄)
+            if fields[3].isdigit():
+                satellites_in_view = int(fields[3])
     except (IndexError, ValueError):
         # 忽略解析錯誤，返回 None
         pass
 
-    return utc_time, satellite_count
+    return utc_time, satellites_in_view
 
 def main():
     # 設定 USB 串口
@@ -36,16 +38,29 @@ def main():
 
     print("正在接收 NMEA 資料...")
 
+    # 用於累積衛星數的變數
+    last_satellites_in_view = None
+    last_utc_time = None
+
     try:
         while True:
             line = ser.readline().decode('ascii', errors='ignore').strip()
             if line:
-                utc_time, satellite_count = parse_nmea(line)
-                if utc_time and satellite_count:
-                    print(f"UTC+8 時間: {utc_time}, 衛星數: {satellite_count}")
-                else:
-                    # 處理未知字串但不停止程式
-                    print(f"未知字串: {line}")
+                utc_time, satellites_in_view = parse_nmea(line)
+
+                # 更新時間
+                if utc_time:
+                    last_utc_time = utc_time
+
+                # 確認衛星數據
+                if satellites_in_view is not None:
+                    # 只有當總衛星數改變時才顯示
+                    if satellites_in_view != last_satellites_in_view:
+                        last_satellites_in_view = satellites_in_view
+                        if last_utc_time:
+                            print(f"{last_utc_time}, 總衛星數: {satellites_in_view}")
+                        else:
+                            print(f"總衛星數: {satellites_in_view}")
     except KeyboardInterrupt:
         print("\n程式結束")
     finally:
