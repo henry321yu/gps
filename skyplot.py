@@ -1,4 +1,4 @@
-import numpy as np
+import numpy as np ###########################直接plot(不是真值)
 import matplotlib.pyplot as plt
 
 def parse_obs_file(obs_file):
@@ -20,16 +20,16 @@ def parse_obs_file(obs_file):
 
         # 解析衛星數據行
         tokens = line.split()
-        if len(tokens) < 5:
+        if len(tokens) < 9:
             continue  # 略過無效行
 
         # 檢查是否是衛星數據行（以 G 或 R 開頭）
         if tokens[0].startswith('G') or tokens[0].startswith('R') or tokens[0].startswith('E'):
-            # print(tokens)
+            print(tokens)
             try:
                 prn = tokens[0]  # 衛星 PRN
-                az = float(tokens[1])  # 方位角
-                el = float(tokens[3])  # 仰角（假設仰角在第四列）
+                az = float(tokens[8])  # 方位角
+                el = float(tokens[4])  # 仰角（假設仰角在第四列）
 
                 azimuths.append(az)
                 elevations.append(el)
@@ -42,7 +42,7 @@ def parse_obs_file(obs_file):
 #### **步驟 2：繪製 Skyplot**
 def plot_skyplot(azimuths, elevations, prn_list):
     print("plot_skyplot(azimuths, elevations, prn_list):")
-    print(azimuths)
+    # print(azimuths)
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(111, polar=True)
     ax.set_theta_zero_location('N')
@@ -51,7 +51,7 @@ def plot_skyplot(azimuths, elevations, prn_list):
     ax.set_yticks([0, 30, 60, 90])
     ax.set_yticklabels(["90°", "60°", "30°", "0°"])
         
-    ax.scatter(np.radians(azimuths), 90 - np.array(elevations), s=50)
+    ax.scatter(np.radians(azimuths), 90 - np.array(elevations), s=5)
         
     plt.title("GNSS Skyplot")
     plt.show()
