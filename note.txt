@@ -1,0 +1,38 @@
+RTKLIB
+
+轉rinex
+convbin -r ubx -o 1.obs -n 1.nav log01077.ubx
+convbin -r ubx -o "D:\gps file\12f roof  香菇\rtklib\1.obs" -n "D:\gps file\12f roof  香菇\rtklib\1.nav" "D:\gps file\12f roof  香菇\log01077.ubx"
+
+輸出修正後的位置與衛星軌跡?
+rnx2rtkp -p 0 -m 45 -o sat_positions.pos 1.obs 1.nav
+-p 0 = 單點定位模式
+-m 45 = 剔除仰角低於 45° 的衛星
+-o output.pos = 輸出衛星位置
+
+輸出修正後的rinex
+convbin -r rinex -o 2.obs sat_positions.pos
+
+
+
+
+
+
+
+python.exe -m pip install --upgrade pip
+pip install git+https://github.com/serioca/pyrinex.git
+pip uninstall pyrinex
+
+
+
+
+
+22.997483630
+120.221716942
+68.7752
+
+5樓屋頂base處
+
+UART2
+base out 9600
+rover in 9600
